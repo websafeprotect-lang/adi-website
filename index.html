@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADI — Abuse Detect Intelligence | Free Abuse Reporting</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #0f172a;
+    --bg2:     #1a2540;
+    --bg3:     #243050;
+    --card:    #16213a;
+    --orange:  #ff6b35;
+    --orange2: #e85520;
+    --yellow:  #fbbf24;
+    --green:   #22c55e;
+    --red:     #ef4444;
+    --blue:    #60a5fa;
+    --text:    #f1f5f9;
+    --sub:     #94a3b8;
+    --border:  rgba(255,255,255,0.07);
+    --font:    'Plus Jakarta Sans', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 15px; line-height: 1.6; overflow-x: hidden; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+    background: rgba(15,23,42,0.92); backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px; height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo-icon {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: var(--orange); display: flex; align-items: center;
+    justify-content: center; font-size: 17px;
+  }
+  .logo-text { font-weight: 700; font-size: 16px; color: var(--text); }
+  .logo-text span { color: var(--orange); }
+  .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+  .nav-links a { font-size: 14px; font-weight: 500; color: var(--sub); text-decoration: none; transition: color .2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-report {
+    background: var(--orange); color: #fff;
+    padding: 8px 20px; border-radius: 8px;
+    font-size: 13px; font-weight: 700; text-decoration: none;
+    transition: all .2s; border: none; cursor: pointer; font-family: var(--font);
+  }
+  .nav-report:hover { background: var(--orange2); transform: translateY(-1px); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 100px 32px 60px; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .hero-glow {
+    position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,107,53,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .free-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3);
+    color: var(--green); padding: 5px 14px; border-radius: 100px;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
+    text-transform: uppercase; margin-bottom: 28px;
+  }
+  .free-pill::before { content: '✓'; font-size: 11px; }
+  .hero h1 {
+    font-size: clamp(36px, 6vw, 72px); font-weight: 800;
+    line-height: 1.1; letter-spacing: -1.5px;
+    max-width: 760px; margin-bottom: 20px;
+  }
+  .hero h1 em { color: var(--orange); font-style: normal; }
+  .hero p {
+    font-size: clamp(15px, 2vw, 18px); color: var(--sub);
+    max-width: 560px; margin-bottom: 40px; font-weight: 400;
+  }
+
+  /* ── REPORT FORM (hero) ── */
+  .report-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px; width: 100%; max-width: 600px;
+    text-align: left; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    position: relative; z-index: 1;
+  }
+  .rb-title { font-weight: 700; font-size: 16px; margin-bottom: 20px; color: var(--text); }
+  .rb-title span { color: var(--sub); font-weight: 400; font-size: 14px; margin-left: 4px; }
+  .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--sub); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%; padding: 10px 14px;
+    background: var(--bg2); border: 1px solid var(--border);
+    color: var(--text); border-radius: 8px; font-family: var(--font);
+    font-size: 14px; outline: none; transition: border-color .2s;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--orange); }
+  .form-group select { appearance: none; cursor: pointer; }
+  .form-group select option { background: var(--bg2); }
+  .form-group textarea { resize: vertical; min-height: 72px; }
+  .submit-btn {
+    width: 100%; padding: 12px; margin-top: 8px;
+    background: var(--orange); color: #fff;
+    font-family: var(--font); font-size: 15px; font-weight: 700;
+    border: none; border-radius: 8px; cursor: pointer;
+    transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .submit-btn:hover { background: var(--orange2); transform: translateY(-1px); }
+  .privacy-note { font-size: 12px; color: var(--sub); margin-top: 12px; text-align: center; }
+  .privacy-note a { color: var(--sub); }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    background: var(--card); border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: center; gap: 0; flex-wrap: wrap;
+  }
+  .stat-item {
+    padding: 20px 40px; text-align: center;
+    border-right: 1px solid var(--border);
+    flex: 1; min-width: 140px;
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num {
+    font-size: 28px; font-weight: 800; color: var(--orange);
+    line-height: 1; font-variant-numeric: tabular-nums;
+  }
+  .stat-lbl { font-size: 12px; color: var(--sub); margin-top: 4px; font-weight: 500; }
+
+  /* ── SECTION BASE ── */
+  .section { padding: 80px 32px; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .s-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--orange); margin-bottom: 12px; }
+  .s-title { font-size: clamp(24px, 3.5vw, 40px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 12px; }
+  .s-sub { font-size: 15px; color: var(--sub); max-width: 540px; line-height: 1.7; }
+
+  /* ── WHAT TO REPORT ── */
+  #what { background: var(--bg2); }
+  .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 40px; }
+  .cat-card {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+    cursor: pointer; transition: all .2s; text-decoration: none; color: var(--text);
+    display: block;
+  }
+  .cat-card:hover { border-color: var(--orange); transform: translateY(-2px); background: var(--card); }
+  .cat-emoji { font-size: 28px; margin-bottom: 12px; display: block; }
+  .cat-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .cat-desc { font-size: 12px; color: var(--sub); line-height: 1.5; }
+  .cat-count { font-size: 11px; color: var(--orange); font-weight: 700; margin-top: 10px; }
+
+  /* ── HOW IT WORKS ── */
+  #how { background: var(--bg); }
+  .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 48px; }
+  .how-step {
+    position: relative; padding: 28px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  }
+  .how-step::after {
+    content: '→'; position: absolute; right: -24px; top: 50%;
+    transform: translateY(-50%); color: var(--border); font-size: 20px;
+    display: none;
+  }
+  .how-num {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: var(--orange); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 800; margin-bottom: 16px;
+  }
+  .how-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .how-desc  { font-size: 13px; color: var(--sub); line-height: 1.7; }
+
+  /* ── RECENT REPORTS ── */
+  #recent { background: var(--bg2); }
+  .recent-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .live-tag {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 700; color: var(--green);
+  }
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.5;transform:scale(.8);} }
+  .view-all { font-size: 13px; color: var(--sub); text-decoration: none; font-weight: 500; }
+  .view-all:hover { color: var(--orange); }
+  .report-list { display: flex; flex-direction: column; gap: 8px; }
+  .report-row {
+    display: grid; grid-template-columns: auto 1fr auto auto;
+    align-items: center; gap: 16px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 18px;
+    transition: border-color .2s;
+  }
+  .report-row:hover { border-color: rgba(255,107,53,0.3); }
+  .r-type {
+    padding: 3px 10px; border-radius: 100px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.3px; white-space: nowrap;
+  }
+  .rt-phish  { background: rgba(239,68,68,.15);  color: #f87171; }
+  .rt-spam   { background: rgba(251,191,36,.12);  color: #fbbf24; }
+  .rt-scam   { background: rgba(255,107,53,.12);  color: var(--orange); }
+  .rt-malware{ background: rgba(168,85,247,.15);  color: #c084fc; }
+  .rt-fraud  { background: rgba(96,165,250,.12);  color: var(--blue); }
+  .r-url { font-size: 13px; color: var(--sub); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+  .r-url strong { color: var(--text); font-weight: 600; }
+  .r-country { font-size: 12px; color: var(--sub); white-space: nowrap; }
+  .r-time { font-size: 12px; color: #475569; white-space: nowrap; }
+
+  /* ── SEARCH ── */
+  #search { background: var(--bg); }
+  .search-box-wrap { max-width: 660px; margin: 40px auto 0; }
+  .search-box {
+    display: flex; gap: 0;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden; transition: border-color .2s;
+  }
+  .search-box:focus-within { border-color: var(--orange); }
+  .search-box input {
+    flex: 1; padding: 14px 20px; background: transparent;
+    border: none; color: var(--text); font-family: var(--font); font-size: 14px; outline: none;
+  }
+  .search-box input::placeholder { color: var(--sub); }
+  .search-btn {
+    padding: 12px 24px; background: var(--orange); color: #fff;
+    font-family: var(--font); font-size: 14px; font-weight: 700;
+    border: none; cursor: pointer; transition: background .2s;
+  }
+  .search-btn:hover { background: var(--orange2); }
+  .search-note { font-size: 13px; color: var(--sub); text-align: center; margin-top: 14px; }
+  .search-examples { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+  .ex-tag {
+    padding: 5px 12px; background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 100px; font-size: 12px; color: var(--sub); cursor: pointer;
+    transition: all .2s;
+  }
+  .ex-tag:hover { border-color: var(--orange); color: var(--orange); }
+
+  /* ── FAQ ── */
+  #faq { background: var(--bg2); }
+  .faq-list { max-width: 720px; margin-top: 40px; }
+  .faq-item { border-bottom: 1px solid var(--border); }
+  .faq-q {
+    width: 100%; padding: 18px 0; background: none; border: none;
+    color: var(--text); font-family: var(--font); font-size: 15px; font-weight: 600;
+    cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+    text-align: left; gap: 20px; transition: color .2s;
+  }
+  .faq-q:hover { color: var(--orange); }
+  .faq-icon { flex-shrink: 0; font-size: 18px; color: var(--sub); transition: transform .3s; }
+  .faq-item.open .faq-icon { transform: rotate(45deg); color: var(--orange); }
+  .faq-a { display: none; padding: 0 0 18px; color: var(--sub); font-size: 14px; line-height: 1.8; max-width: 600px; }
+  .faq-item.open .faq-a { display: block; }
+
+  /* ── CTA BANNER ── */
+  #report-cta {
+    background: var(--orange);
+    padding: 64px 32px; text-align: center;
+  }
+  #report-cta h2 { font-size: clamp(24px,4vw,40px); font-weight: 800; color: #fff; margin-bottom: 12px; letter-spacing: -0.5px; }
+  #report-cta p { color: rgba(255,255,255,0.8); font-size: 16px; margin-bottom: 32px; }
+  .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-white {
+    padding: 13px 30px; background: #fff; color: var(--orange);
+    border-radius: 8px; font-family: var(--font); font-size: 15px; font-weight: 700;
+    text-decoration: none; transition: all .2s; border: none; cursor: pointer;
+  }
+  .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+  .btn-outline-white {
+    padding: 13px 30px; background: transparent; color: #fff;
+    border: 2px solid rgba(255,255,255,0.5); border-radius: 8px;
+    font-family: var(--font); font-size: 15px; font-weight: 600;
+    text-decoration: none; transition: all .2s;
+  }
+  .btn-outline-white:hover { border-color: #fff; background: rgba(255,255,255,0.1); }
+
+  /* ── FOOTER ── */
+  footer { background: var(--bg); border-top: 1px solid var(--border); padding: 48px 32px 28px; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 40px; }
+  .footer-brand p { font-size: 13px; color: var(--sub); line-height: 1.7; margin: 12px 0 20px; max-width: 280px; }
+  .f-free-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25);
+    color: var(--green); padding: 4px 10px; border-radius: 6px;
+    font-size: 11px; font-weight: 700;
+  }
+  .footer-col h4 { font-size: 12px; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 14px; }
+  .footer-col ul { list-style: none; }
+  .footer-col ul li { margin-bottom: 8px; }
+  .footer-col ul li a { font-size: 13px; color: var(--sub); text-decoration: none; transition: color .2s; }
+  .footer-col ul li a:hover { color: var(--orange); }
+  .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 12px; color: var(--sub); }
+  .footer-bottom a { color: var(--sub); text-decoration: none; margin-left: 16px; }
+  .footer-bottom a:hover { color: var(--orange); }
+
+  /* ── REVEAL ── */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s, transform .6s; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:900px){
+    .cat-grid { grid-template-columns: repeat(2,1fr); }
+    .how-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+    .input-row { grid-template-columns: 1fr; }
+    .stat-item { padding: 18px 20px; min-width: 120px; }
+  }
+  @media(max-width:640px){
+    nav { padding: 0 16px; }
+    .nav-links { display: none; }
+    .section { padding: 60px 20px; }
+    .cat-grid { grid-template-columns: repeat(2,1fr); }
+    .footer-grid { grid-template-columns: 1fr; }
+    .report-row { grid-template-columns: auto 1fr; }
+    .r-country,.r-time { display: none; }
+    #hero { padding: 90px 20px 50px; }
+    .stats-bar { gap: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#">
+    <div class="logo-icon">🛡️</div>
+    <span class="logo-text"><span>ADI</span> — Abuse Detect</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#what">What to Report</a></li>
+    <li><a href="#recent">Recent Reports</a></li>
+    <li><a href="#search">Check a URL</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <a href="#hero" class="nav-report">🚨 Report Abuse</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div class="free-pill">100% Free — No Account Required</div>
+  <h1>Report Online Abuse.<br><em>Free, Fast, Open.</em></h1>
+  <p>Help protect the internet. Submit phishing links, scam websites, spam, and malware for free — no registration needed.</p>
+
+  <div class="report-box">
+    <div class="rb-title">Submit an Abuse Report <span>— takes 30 seconds</span></div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label>URL or Email Address</label>
+      <input type="text" placeholder="https://suspicious-site.com or spam@example.com">
+    </div>
+    <div class="input-row">
+      <div class="form-group">
+        <label>Type of Abuse</label>
+        <select>
+          <option>Phishing / Fake login</option>
+          <option>Scam / Fraud</option>
+          <option>Spam</option>
+          <option>Malware / Ransomware</option>
+          <option>Brand impersonation</option>
+          <option>Hate speech</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Country (optional)</label>
+        <select>
+          <option value="">— Unknown —</option>
+          <option>United States</option>
+          <option>United Kingdom</option>
+          <option>Vietnam</option>
+          <option>India</option>
+          <option>China</option>
+          <option>Russia</option>
+          <option>Nigeria</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:0">
+      <label>Additional details (optional)</label>
+      <textarea placeholder="Describe what happened, how you found it, any other context…"></textarea>
+    </div>
+    <button class="submit-btn" onclick="fakeSubmit(this)">🚨 Submit Report for Free</button>
+    <div class="privacy-note">Your IP is never stored. Reports are reviewed and shared with abuse registries. <a href="#">Privacy Policy</a></div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-num" data-target="418294" data-suffix="">0</div><div class="stat-lbl">Total reports submitted</div></div>
+  <div class="stat-item"><div class="stat-num" data-target="97" data-suffix="%">0</div><div class="stat-lbl">Verified & forwarded</div></div>
+  <div class="stat-item"><div class="stat-num" data-target="143" data-suffix="+">0</div><div class="stat-lbl">Reports today</div></div>
+  <div class="stat-item"><div class="stat-num" data-target="100" data-suffix="% Free">0</div><div class="stat-lbl">Always free, no limits</div></div>
+</div>
+
+<!-- WHAT TO REPORT -->
+<section id="what" class="section">
+  <div class="container">
+    <div class="reveal">
+      <div class="s-label">// What can I report?</div>
+      <h2 class="s-title">We cover all types of online abuse</h2>
+      <p class="s-sub">From phishing emails to scam websites — if something looks wrong, you can report it here for free.</p>
+    </div>
+    <div class="cat-grid reveal" style="transition-delay:.1s">
+      <a href="#hero" class="cat-card">
+        <span class="cat-emoji">🎣</span>
+        <div class="cat-name">Phishing</div>
+        <div class="cat-desc">Fake login pages, credential harvesting sites pretending to be banks, email providers, or social media.</div>
+        <div class="cat-count">↑ 182,304 reports</div>
+      </a>
+      <a href="#hero" class="cat-card">
+        <span class="cat-emoji">💸</span>
+        <div class="cat-name">Scam & Fraud</div>
+        <div class="cat-desc">Fake investment platforms, romance scams, fake shops, advance-fee fraud, and giveaway scams.</div>
+        <div class="cat-count">↑ 94,811 reports</div>
+      </a>
+      <a href="#hero" class="cat-card">
+        <span class="cat-emoji">📧</span>
+        <div class="cat-name">Spam</div>
+        <div class="cat-desc">Unsolicited bulk email, SMS spam, robocalls, and unwanted commercial messages sent without consent.</div>
+        <div class="cat-count">↑ 67,443 reports</div>
+      </a>
+      <a href="#hero" class="cat-card">
+        <span class="cat-emoji">🦠</span>
+        <div class="cat-name">Malware</div>
+        <div class="cat-desc">Websites distributing malware, ransomware, trojans, spyware, or links to malicious downloads.</div>
+        <div class="cat-count">↑ 38,920 reports</div>
+      </a>
+      <a href="#hero" class="cat-card">
+        <span class="cat-emoji">🏷️</span>
+        <div class="cat-name">Brand Impersonation</div>
+        <div class="cat-desc">Fake social media accounts, cloned websites, and domains impersonating legitimate companies or people.</div>
+        <div class="cat-count">↑ 22,540 reports</div>
+      </a>
+      <a href="#hero" class="cat-card">
+        <span class="cat-emoji">🔐</span>
+        <div class="cat-name">Account Takeover</div>
+        <div class="cat-desc">Credential stuffing attacks, unauthorized login attempts, or compromised account tools being sold online.</div>
+        <div class="cat-count">↑ 11,276 reports</div>
+      </a>
+      <a href="#hero" class="cat-card">
+        <span class="cat-emoji">🚫</span>
+        <div class="cat-name">Illegal Content</div>
+        <div class="cat-desc">CSAM, extremist content, illegal goods marketplaces, and other content violating laws in most jurisdictions.</div>
+        <div class="cat-count">↑ 9,102 reports</div>
+      </a>
+      <a href="#hero" class="cat-card">
+        <span class="cat-emoji">❓</span>
+        <div class="cat-name">Something Else</div>
+        <div class="cat-desc">Not sure what category it is? Just report it anyway — our team reviews everything submitted.</div>
+        <div class="cat-count">↑ Open category</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="section">
+  <div class="container">
+    <div class="reveal">
+      <div class="s-label">// How it works</div>
+      <h2 class="s-title">Simple. Free. No account needed.</h2>
+      <p class="s-sub">Three steps and you're done. Your report helps protect everyone online.</p>
+    </div>
+    <div class="how-grid reveal" style="transition-delay:.1s">
+      <div class="how-step">
+        <div class="how-num">1</div>
+        <div class="how-title">Paste the URL or email</div>
+        <div class="how-desc">Copy the suspicious link, email address, or domain and paste it into the report form. No account, no sign-up required.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">2</div>
+        <div class="how-title">Select abuse type</div>
+        <div class="how-desc">Choose the category that best fits — phishing, scam, spam, malware, or others. Add a short description if you can.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">3</div>
+        <div class="how-title">We forward it automatically</div>
+        <div class="how-desc">Your report is verified and forwarded to domain registrars, hosting providers, abuse registries, and relevant authorities.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECENT REPORTS -->
+<section id="recent" class="section">
+  <div class="container">
+    <div class="recent-header reveal">
+      <div>
+        <div class="s-label">// Community Reports</div>
+        <h2 class="s-title" style="margin-bottom:0">Recent submissions</h2>
+      </div>
+      <div style="display:flex;align-items:center;gap:20px">
+        <div class="live-tag"><div class="live-dot"></div> Live updates</div>
+        <a href="#" class="view-all">View all reports →</a>
+      </div>
+    </div>
+    <div class="report-list reveal" id="report-list" style="margin-top:24px;transition-delay:.1s">
+      <!-- populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- SEARCH / CHECK A URL -->
+<section id="search" class="section">
+  <div class="container" style="text-align:center">
+    <div class="reveal">
+      <div class="s-label">// Check a URL</div>
+      <h2 class="s-title">Already been reported?</h2>
+      <p class="s-sub" style="margin:0 auto">Search our database to see if a domain, URL, or email has already been flagged as abusive.</p>
+    </div>
+    <div class="search-box-wrap reveal" style="transition-delay:.1s">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Enter a domain, URL, or email address…">
+        <button class="search-btn" onclick="fakeSearch()">Check Now</button>
+      </div>
+      <div class="search-note">Free to use · No account required · Updated in real time</div>
+      <div class="search-examples">
+        <span class="s-label" style="margin:0;align-self:center">Try:</span>
+        <span class="ex-tag" onclick="fillSearch('paypal-login.xyz')">paypal-login.xyz</span>
+        <span class="ex-tag" onclick="fillSearch('secure-bank-verify.ru')">secure-bank-verify.ru</span>
+        <span class="ex-tag" onclick="fillSearch('free-iphone-winner.com')">free-iphone-winner.com</span>
+      </div>
+      <div id="search-result" style="margin-top:20px;display:none"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="section">
+  <div class="container">
+    <div class="reveal">
+      <div class="s-label">// FAQ</div>
+      <h2 class="s-title">Frequently asked questions</h2>
+    </div>
+    <div class="faq-list reveal" style="transition-delay:.1s">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Is ADI really free? <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Yes, completely free. You can submit as many reports as you want with no account, no subscription, and no cost — ever. ADI is a community-driven service.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Do I need to create an account? <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">No. You can report abuse anonymously without signing up. If you want to track the status of your reports, you can optionally create a free account — but it's never required.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What happens after I submit a report? <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Your report is automatically verified against known abuse databases. If confirmed, it is forwarded to the relevant domain registrar, hosting provider, abuse registry, or law enforcement body within hours.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Is my personal information kept private? <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Yes. We do not store your IP address. Reports are submitted anonymously by default. We never sell or share your personal data with advertisers.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How long does it take for a site to be taken down? <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">It depends on the registrar and hosting provider. Some act within hours; others take days. We escalate urgent reports (CSAM, active phishing, financial fraud) with higher priority flags.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Can I report something that affected someone else? <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Yes. You don't have to be a victim. If you spot a suspicious website, a spam campaign, or a scam targeting others, please report it — every report helps.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section id="report-cta">
+  <h2>Seen something suspicious?</h2>
+  <p>Report it now. It takes 30 seconds and it's completely free.</p>
+  <div class="cta-btns">
+    <a href="#hero" class="btn-white">🚨 Submit a Report</a>
+    <a href="#search" class="btn-outline-white">Check a URL</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="logo" href="#" style="margin-bottom:4px">
+          <div class="logo-icon">🛡️</div>
+          <span class="logo-text"><span>ADI</span> — Abuse Detect</span>
+        </a>
+        <p>A free, community-driven platform for reporting online abuse. No accounts. No fees. No ads. Just a safer internet.</p>
+        <span class="f-free-badge">✓ Free forever</span>
+      </div>
+      <div class="footer-col">
+        <h4>Report</h4>
+        <ul>
+          <li><a href="#">Phishing</a></li>
+          <li><a href="#">Scam & Fraud</a></li>
+          <li><a href="#">Spam</a></li>
+          <li><a href="#">Malware</a></li>
+          <li><a href="#">Illegal Content</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Tools</h4>
+        <ul>
+          <li><a href="#">Check a URL</a></li>
+          <li><a href="#">Recent Reports</a></li>
+          <li><a href="#">Statistics</a></li>
+          <li><a href="#">API Access</a></li>
+          <li><a href="#">Browser Extension</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul>
+          <li><a href="#">How it works</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Use</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 ADI — Abuse Detect Intelligence. Free and open to everyone.</span>
+      <div>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── FAKE SUBMIT ──
+function fakeSubmit(btn) {
+  btn.textContent = '⏳ Submitting…';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = '✅ Report submitted — Thank you!';
+    btn.style.background = '#22c55e';
+    setTimeout(() => {
+      btn.textContent = '🚨 Submit Report for Free';
+      btn.style.background = '';
+      btn.disabled = false;
+    }, 3000);
+  }, 1200);
+}
+
+// ── FAKE SEARCH ──
+function fillSearch(val) { document.getElementById('searchInput').value = val; }
+function fakeSearch() {
+  const val = document.getElementById('searchInput').value.trim();
+  const res = document.getElementById('search-result');
+  if (!val) return;
+  res.style.display = 'block';
+  res.innerHTML = '<div style="color:var(--sub);font-size:14px">Checking database…</div>';
+  setTimeout(() => {
+    const flagged = Math.random() > 0.4;
+    if (flagged) {
+      res.innerHTML = `
+        <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:20px;text-align:left">
+          <div style="color:#f87171;font-weight:700;font-size:15px;margin-bottom:8px">⚠️ ${val} — Flagged as abusive</div>
+          <div style="color:var(--sub);font-size:13px;line-height:1.7">This URL/domain has been reported <strong style="color:var(--text)">${Math.floor(Math.random()*40+3)} times</strong> by our community. Category: <strong style="color:var(--text)">Phishing</strong>. First seen: <strong style="color:var(--text)">${Math.floor(Math.random()*30+1)} days ago</strong>. Do not visit this site.</div>
+        </div>`;
+    } else {
+      res.innerHTML = `
+        <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:20px;text-align:left">
+          <div style="color:#4ade80;font-weight:700;font-size:15px;margin-bottom:8px">✓ ${val} — Not in our database</div>
+          <div style="color:var(--sub);font-size:13px;line-height:1.7">This URL has not been reported to ADI yet. That doesn't mean it's safe — if something looks suspicious, please <a href="#hero" style="color:var(--orange)">submit a report</a>.</div>
+        </div>`;
+    }
+  }, 1000);
+}
+
+// ── RECENT REPORTS (simulated) ──
+const reports = [
+  { type: 'Phishing',   cls: 'rt-phish',   url: 'hxxp://secure-paypa1-login[.]com/verify', country: '🇷🇺 Russia',   time: '2 min ago' },
+  { type: 'Scam',       cls: 'rt-scam',    url: 'hxxps://bitcoin-doubler-win[.]xyz/claim', country: '🇳🇬 Nigeria',   time: '5 min ago' },
+  { type: 'Spam',       cls: 'rt-spam',    url: 'no-reply@free-insurance-offer[.]biz',     country: '🇺🇸 USA',      time: '8 min ago' },
+  { type: 'Malware',    cls: 'rt-malware', url: 'hxxp://update-flash-player[.]ru/setup.exe',country: '🇨🇳 China',    time: '11 min ago'},
+  { type: 'Phishing',   cls: 'rt-phish',   url: 'hxxps://apple-id-suspended[.]info/login', country: '🇰🇷 Korea',    time: '14 min ago'},
+  { type: 'Fraud',      cls: 'rt-fraud',   url: 'hxxps://investment-guaranteed[.]vip',     country: '🇬🇧 UK',       time: '17 min ago'},
+  { type: 'Spam',       cls: 'rt-spam',    url: 'info@cheap-med1cations-online[.]shop',    country: '🇮🇳 India',    time: '21 min ago'},
+  { type: 'Phishing',   cls: 'rt-phish',   url: 'hxxp://netflixx-account-update[.]com',   country: '🇺🇦 Ukraine',  time: '25 min ago'},
+];
+function renderReports(list) {
+  const el = document.getElementById('report-list');
+  el.innerHTML = list.map(r => `
+    <div class="report-row">
+      <span class="r-type ${r.cls}">${r.type}</span>
+      <span class="r-url">${r.url}</span>
+      <span class="r-country">${r.country}</span>
+      <span class="r-time">${r.time}</span>
+    </div>
+  `).join('');
+}
+renderReports(reports);
+
+// Add new row every few seconds
+let rIdx = 0;
+const newReports = [
+  { type: 'Scam', cls: 'rt-scam', url: 'hxxps://fake-amazon-refund[.]com/claim', country: '🇧🇷 Brazil', time: 'just now' },
+  { type: 'Phishing', cls: 'rt-phish', url: 'hxxp://google-account-verify[.]net', country: '🇵🇰 Pakistan', time: 'just now' },
+  { type: 'Malware', cls: 'rt-malware', url: 'hxxps://crack-software-free[.]io/download', country: '🇮🇩 Indonesia', time: 'just now' },
+];
+setInterval(() => {
+  const r = newReports[rIdx++ % newReports.length];
+  reports.unshift(r);
+  if (reports.length > 8) reports.pop();
+  reports.forEach((x, i) => {
+    if (i > 0) x.time = x.time === 'just now' ? '2 min ago' : x.time;
+  });
+  renderReports(reports);
+}, 6000);
+
+// ── FAQ ──
+function toggleFaq(btn) {
+  const item = btn.parentElement;
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
+
+// ── COUNTERS ──
+function animCount(el) {
+  const target = parseInt(el.dataset.target);
+  const suffix = el.dataset.suffix || '';
+  const dur = 1600, s = performance.now();
+  (function step(now) {
+    const ease = 1 - Math.pow(1 - Math.min((now - s) / dur, 1), 3);
+    const val = Math.floor(ease * target);
+    el.textContent = (target >= 1000 ? val.toLocaleString() : val) + suffix;
+    if (ease < 1) requestAnimationFrame(step);
+  })(s);
+}
+const cObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting && e.target.dataset.target) {
+      animCount(e.target);
+      cObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.4 });
+document.querySelectorAll('[data-target]').forEach(el => cObs.observe(el));
+
+// ── REVEAL ──
+const rObs = new IntersectionObserver(
+  es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+  { threshold: 0.08 }
+);
+document.querySelectorAll('.reveal').forEach(r => rObs.observe(r));
+</script>
+</body>
+</html>
